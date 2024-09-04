@@ -20,6 +20,8 @@ jupyter = "*"
 requests = "*"
 pgcli = "*"
 questionary = "*"
+ipykernel = "*"
+matplotlib = "*"
 
 [requires]
 python_version = "3.12"
