@@ -39,3 +39,25 @@ The data could be found in `data/incidents_train.csv`
 - PostgreSQL as the backend for it
 - OpenAI, Ollama (llama3.1) as an LLM
 
+## Preparation
+
+To run llama3.1 on Ollama you need to:
+
+- install Ollama
+```
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+and run 
+```
+ollama serve
+```
+
+- pull llama3.1 model
+```
+ollama pull llama3.1
+```
+
+You could check the instructions on the official webpage https://ollama.com/
+
+
