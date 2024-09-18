@@ -81,3 +81,162 @@ docker exec -it ollama bash
 ollama pull llama3.1
 ```
 
+For dependency management, we use pipenv, so you need to install it:
+
+```bash
+pip install pipenv
+```
+
+Once installed, you can install the app dependencies:
+
+```bash
+pipenv install --dev
+```
+
+## Running the application
+
+
+### Database configuration
+
+Before the application starts for the first time, the database
+needs to be initialized.
+
+First, run `postgres`:
+
+```bash
+docker-compose up postgres
+```
+
+Then run the [`db_prep.py`](food_hazard_detector/db_prep.py) script:
+
+```bash
+pipenv shell
+
+cd food_hazard_detector
+
+export POSTGRES_HOST=localhost
+python db_prep.py
+```
+
+To check the content of the database, use `pgcli` (already
+installed with pipenv):
+
+```bash
+pipenv run pgcli -h localhost -U your_username -d food_hazard_detector -W
+```
+
+You can view the schema using the `\d` command:
+
+```sql
+\d conversations;
+```
+
+And select from this table:
+
+```sql
+select * from conversations;
+```
+
+### Running with Docker-Compose
+
+The easiest way to run the application is with `docker-compose`:
+
+```bash
+docker-compose up
+```
+
+### Running locally
+
+If you want to run the application locally,
+start only postres:
+
+```bash
+docker-compose up postgres
+```
+
+If you previously started all applications with
+`docker-compose up`, you need to stop the `app`:
+
+```bash
+docker-compose stop app
+```
+
+Now run the app on your host machine:
+
+```bash
+pipenv shell
+
+cd food_hazard_detector
+
+export POSTGRES_HOST=localhost
+python app.py
+```
+
+### Running with Docker (without compose)
+
+Sometimes you might want to run the application in
+Docker without Docker Compose, e.g., for debugging purposes.
+
+First, prepare the environment by running Docker Compose
+as in the previous section.
+
+Next, build the image:
+
+```bash
+docker build -t food-hazard-detector .
+```
+
+And run it:
+
+```bash
+docker run -it --rm \
+    --network="food-hazard-detector_default" \
+    --env-file=".env" \
+    -e DATA_PATH="data/data.csv" \
+    -p 5000:5000 \
+    food-hazard-detector
+```
+
+## Using the application
+
+When the application is running, we can start using it.
+
+### Using `requests`
+
+When the application is running, you can use
+[requests](https://requests.readthedocs.io/en/latest/)
+to send questions—use [test.py](test.py) for testing it:
+
+```bash
+pipenv run python test.py
+```
+
+It will pick a random question from a small list
+and send it to the app.
+
+### CURL
+
+You can also use `curl` for interacting with the API:
+
+```bash
+URL=http://localhost:5000
+QUESTION="Tell me the main biological hazard found in smoked sausage"
+DATA='{
+    "question": "'${QUESTION}'"
+}'
+
+curl -X POST \
+    -H "Content-Type: application/json" \
+    -d "${DATA}" \
+    ${URL}/question
+```
+
+You will see something like the following in the response:
+
+```json
+{
+  "answer": "Based on the context, the main biological hazard found in smoked sausage is Listeria monocytogenes. This is mentioned in three separate reports:\n\n* Recall of Smoked Pork Sausage Produced by Rimantas Meats, due to the Presence of Listeria monocytogenes\n* Mini Smoked Farmer Sausage recalled due to Listeria monocytogenes\n* o.t (smoked salmon) ltd is recalling various smoked salmon products due to the presence of listeria (note: while this report mentions salmon, it also specifically mentions that the product was a type of sausage)\n\nTherefore, the answer to your question is:\n\nListeria monocytogenes",
+  "conversation_id": "b760c02d-2a85-4e20-8133-c53368292841",
+  "question": "Tell me the main biological hazard found in smoked sausage"
+}
+```
