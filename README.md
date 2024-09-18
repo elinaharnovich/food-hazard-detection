@@ -58,6 +58,26 @@ ollama serve
 ollama pull llama3.1
 ```
 
+- run it
+```
+ollama run llama3.1
+```
+
 You could check the instructions on the official webpage https://ollama.com/
 
+#### Docker
+
+```
+docker run -it \
+    -v ollama:/root/.ollama \
+    -p 11434:11434 \
+    --name ollama \
+    ollama/ollama
+```
+
+Pulling the model
+```
+docker exec -it ollama bash
+ollama pull llama3.1
+```
 
