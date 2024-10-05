@@ -219,7 +219,7 @@ and send it to the app.
 You can also use `curl` for interacting with the API:
 
 ```bash
-URL=http://localhost:5000
+URL=http://127.0.0.1:5000
 QUESTION="Tell me the main biological hazard found in smoked sausage"
 DATA='{
     "question": "'${QUESTION}'"
@@ -240,3 +240,88 @@ You will see something like the following in the response:
   "question": "Tell me the main biological hazard found in smoked sausage"
 }
 ```
+
+## Code
+
+The code for the application is in the [`food_hazard_detector`](food_hazard_detector/) folder:
+
+- [`app.py`](food_hazard_detector/app.py) - the Flask API, the main entrypoint to the application
+- [`rag.py`](food_hazard_detector/rag.py) - the main RAG logic for building the retrieving the data and building the prompt
+- [`ingest.py`](food_hazard_detector/ingest.py) - loading the data into the knowledge base
+- [`minsearch.py`](food_hazard_detector/minsearch.py) - an in-memory search engine
+- [`db.py`](food_hazard_detector/db.py) - the logic for logging the requests and responses to postgres
+- [`db_prep.py`](food_hazard_detector/db_prep.py) - the script for initializing the database
+
+We also have some code in the project root directory:
+
+- [`test.py`](test.py) - select a question for testing
+
+### Interface
+
+We use Flask for serving the application as an API.
+
+Refer to the ["Using the Application" section](#using-the-application)
+for examples on how to interact with the application.
+
+### Ingestion
+
+The ingestion script is in [`ingest.py`](food_hazard_detector/ingest.py).
+
+Since we use an in-memory database, `minsearch`, as our
+knowledge base, we run the ingestion script at the startup
+of the application.
+
+It's executed inside [`rag.py`](food_hazard_detector/rag.py)
+when we import it.
+
+## Experiments
+
+For experiments, we use Jupyter notebooks.
+They are in the [`notebooks`](notebooks/) folder.
+
+To start Jupyter, run:
+
+```bash
+cd notebooks
+pipenv run jupyter notebook
+```
+
+We have the following notebooks:
+
+- [`rag-test.ipynb`](notebooks/rag-test.ipynb): The RAG flow and evaluating the system.
+- [`evaluation-data-generation.ipynb`](notebooks/evaluation-data-generation.ipynb): Generating the ground truth dataset for retrieval evaluation.
+
+### Retrieval evaluation
+
+The basic approach - using `minsearch` without any boosting - gave the following metrics:
+
+- Hit rate: 61%
+- MRR: 41%
+
+The improved version (with tuned boosting):
+
+- Hit rate: 66%
+- MRR: 47%
+
+The best boosting parameters:
+
+```python
+boost = {
+    'title': 2.99,
+    'hazard_category': 0.41,
+    'product_category': 1.97,
+    'hazard': 0.92,
+    'product': 0.64
+}
+```
+
+### RAG flow evaluation
+
+We used the LLM-as-a-Judge metric to evaluate the quality
+of our RAG flow.
+
+For `llama3.1`, in a sample with _ records, we had:
+
+- _ (83%) `RELEVANT`
+- _ (15%) `PARTLY_RELEVANT`
+- _ (1.5%) `NON_RELEVANT`
