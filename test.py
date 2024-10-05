@@ -10,7 +10,7 @@ question = random.choice(question_list)
 
 print("question: ", question)
 
-url = "http://localhost:5000/question"
+url = "http://127.0.0.1:5000/question"
 
 
 data = {"question": question}
