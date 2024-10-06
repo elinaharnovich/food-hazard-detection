@@ -295,23 +295,23 @@ We have the following notebooks:
 
 The basic approach - using `minsearch` without any boosting - gave the following metrics:
 
-- Hit rate: 61%
-- MRR: 41%
+- Hit rate: 40%
+- MRR: 26%
 
 The improved version (with tuned boosting):
 
-- Hit rate: 66%
-- MRR: 47%
+- Hit rate: 50%
+- MRR: 37%
 
 The best boosting parameters:
 
 ```python
 boost = {
-    'title': 2.99,
-    'hazard_category': 0.41,
-    'product_category': 1.97,
-    'hazard': 0.92,
-    'product': 0.64
+    'title': 2.35,
+    'hazard_category': 1.12,
+    'product_category': 0.08,
+    'hazard': 0.20,
+    'product': 1.62
 }
 ```
 
