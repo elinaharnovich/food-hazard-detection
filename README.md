@@ -314,14 +314,17 @@ boost = {
     'product': 1.62
 }
 ```
+Details are in `notebooks/retrieval-evaluation.ipynb`
 
 ### RAG flow evaluation
 
 We used the LLM-as-a-Judge metric to evaluate the quality
 of our RAG flow.
 
-For `llama3.1`, in a sample with _ records, we had:
+For `llama3.1`, in a sample with 288 records, we had:
 
-- _ (83%) `RELEVANT`
-- _ (15%) `PARTLY_RELEVANT`
-- _ (1.5%) `NON_RELEVANT`
+- 114 (39.5%) `RELEVANT`
+- 156 (54%) `PARTLY_RELEVANT`
+- 18 (0.06%) `NON_RELEVANT`
+
+Details are `in notebooks/rag-evaluation.ipynb`
