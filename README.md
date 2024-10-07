@@ -328,3 +328,28 @@ For `llama3.1`, in a sample with 288 records, we had:
 - 18 (0.06%) `NON_RELEVANT`
 
 Details are `in notebooks/rag-evaluation.ipynb`
+
+### Vector search evaluation
+To experiment and evaluate vector search `Elastic Search` and `SentenceTransformers` were used:
+
+To do it on your own, run Elastic Search:
+
+```
+docker run -it \
+    --rm \
+    --name elasticsearch \
+    -m 4GB \
+    -p 9200:9200 \
+    -p 9300:9300 \
+    -e "discovery.type=single-node" \
+    -e "xpack.security.enabled=false" \
+    docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+```
+To get vectors of concatenates fields ('title', 'hazard_category', 'product_category', 'hazard', 'product') 'multi-qa-MiniLM-L6-cos-v1' model was used and it gives the following metrics:
+
+- Hit rate: 46%
+- MRR: 37%
+
+Those results are slightly better than using minsearch without boosting (40% and 26% accordingly).
+
+Details are in `notebooks/evaluate-vector.ipynb`
