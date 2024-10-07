@@ -22,6 +22,7 @@ pgcli = "*"
 questionary = "*"
 ipykernel = "*"
 matplotlib = "*"
+sentence_transformers = "*"
 
 [requires]
 python_version = "3.12"
